@@ -6,6 +6,7 @@ import './styles/App.scss';
 import Line from './components/Line';
 
 import { network } from './constants';
+import LineSelector from './components/LineSelector';
 
 const MainContainer = styled.main``;
 
@@ -31,9 +32,16 @@ export default () => {
     return () => document.removeEventListener('keydown', handleLineChange);
   });
 
+  const handleOnSelectionChange = (newLine) => {
+    const id = network.indexOf(newLine);
+
+    setCurrentLine(id);
+  };
+
   return (
     <MainContainer>
-      <Line {...line} network={network} />
+      <LineSelector network={network} onSelectionChange={handleOnSelectionChange} />
+      <Line {...line} />
     </MainContainer>
   );
 };

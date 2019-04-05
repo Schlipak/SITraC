@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import LineIcon from './LineIcon';
+
 import { lineTypeToIcon } from '../utils';
+import { Neutrals } from '../constants';
 
 const ConnectionsWrapper = styled.div`
   position: absolute;
@@ -56,7 +58,7 @@ const ConnectionType = styled.div`
   }
 `;
 
-const ConnectionIcon = styled(LineIcon)`
+export const ConnectionIcon = styled(LineIcon)`
   width: 1.75em;
   height: 1.75em;
   font-size: 1.75em;
@@ -66,7 +68,7 @@ const ConnectionIcon = styled(LineIcon)`
   }
 `;
 
-const ConnectionTypeIcon = styled(ConnectionIcon)`
+export const ConnectionTypeIcon = styled(ConnectionIcon)`
   position: absolute;
   left: 0;
   transform: translateX(-50%);
@@ -79,9 +81,9 @@ const StationConnections = ({ connections, isCurrent }) => (
       <ConnectionType key={type}>
         <ConnectionTypeIcon
           background="white"
-          foreground="#2f3542"
+          foreground={Neutrals.black.dark}
           shape="circle"
-          border="0.15em solid #2f3542"
+          border={`0.15em solid ${Neutrals.black.dark}`}
         >
           <span>{lineTypeToIcon(type)}</span>
         </ConnectionTypeIcon>

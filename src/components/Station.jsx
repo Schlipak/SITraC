@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import StationDot from './StationDot';
 import StationConnections from './StationConnections';
@@ -18,37 +18,25 @@ const StationWrapper = styled.div`
 
   color: #2f3542;
 
-  &:first-of-type,
-  &:last-of-type {
-    &::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      width: 50%;
-      height: 100%;
-      background-color: white;
-      pointer-events: none;
-      z-index: 1;
-    }
+  &::before {
+    content: unset;
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-color: white;
+    pointer-events: none;
+    z-index: 1;
   }
 
-  &:first-of-type {
-    margin-left: 0;
-
-    &::before {
-      right: 50%;
-      width: calc(50vw + 3em);
-    }
-  }
+  ${props => props.isFirst
+    && css`
+      margin-left: 0;
+    `}
 
   &:last-of-type {
     margin-right: 0;
-
-    &::before {
-      left: 50%;
-      width: calc(50vw + 3em);
-    }
   }
 `;
 
@@ -107,7 +95,7 @@ const StationSubNameLabel = styled.p`
 `;
 
 const Station = ({
-  station, isFirst, isCurrent, isNext, lineColor, network,
+  station, isFirst, isCurrent, isNext, lineColor,
 }) => {
   const { name, subName, connections } = station;
   const hasConnections = Object.entries(connections).length !== 0;
@@ -133,11 +121,17 @@ const Station = ({
   }, [isCurrent, isNext]);
 
   return (
-    <StationWrapper isCurrent={isCurrent} isNext={isNext} ref={stationRef}>
+    <StationWrapper
+      className="station"
+      isCurrent={isCurrent}
+      isNext={isNext}
+      isFirst={isFirst}
+      ref={stationRef}
+    >
       {!isFirst && (
         <NextStationIndicator isCurrent={isCurrent} isNext={isNext} ref={nextStationIndicatorRef} />
       )}
-      <StationName isCurrent={isCurrent} isNext={isNext}>
+      <StationName className="station-name" isCurrent={isCurrent} isNext={isNext}>
         <StationNameLabel>{name}</StationNameLabel>
         {subName && <StationSubNameLabel>{subName}</StationSubNameLabel>}
       </StationName>
@@ -158,7 +152,6 @@ Station.propTypes = {
   isCurrent: PropTypes.bool,
   isNext: PropTypes.bool,
   lineColor: PropTypes.string,
-  network: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.any)).isRequired,
 };
 
 Station.defaultProps = {

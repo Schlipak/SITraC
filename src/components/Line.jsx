@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import Station from './Station';
 import LineIcon from './LineIcon';
+import StationsLine from './StationsLine';
 
 import { lineTypeToIcon } from '../utils';
 import { Neutrals } from '../constants';
+import { getStationFromNode } from '../constants/lines';
 
-const LineWrapper = styled.section`
+const LineWrapperContainer = styled.section`
   display: flex;
   position: relative;
   flex-direction: row;
@@ -46,11 +47,14 @@ const LineIconContainer = styled.div`
 
 const LineTerminus = styled.p`
   display: flex;
+  align-self: stretch;
   align-items: center;
+  margin: 0;
   margin-left: 0.5em;
 
   color: ${Neutrals.black.dark};
   font-size: 1.25em;
+  cursor: ew-resize;
 
   z-index: 200;
 
@@ -58,31 +62,23 @@ const LineTerminus = styled.p`
     margin: 0 0.5em;
     font-size: 0.75em;
     color: ${Neutrals.black.medium};
+
+    transform: rotate(0deg);
+
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
   }
-`;
 
-const StationsWrapper = styled.div`
-  display: flex;
-  position: relative;
-  padding: 0 50vw;
-  font-size: 2em;
-
-  &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0.75em;
-    left: 0;
-    width: 100%;
-    height: 1em;
-
-    background-color: ${props => props.lineColor};
-    border-radius: 1em;
+  &:hover {
+    svg {
+      transform: rotate(180deg);
+    }
   }
 `;
 
 const Line = ({
-  type, name, options, stations, network,
+  type, name, options, stations,
 }) => {
   const [currentStation, setCurrentStation] = useState(0);
   const [isNext, setIsNext] = useState(false);
@@ -90,8 +86,8 @@ const Line = ({
 
   const stationsList = isReversed ? stations.slice().reverse() : stations;
 
-  const firstStation = stationsList[0];
-  const lastStation = stationsList[stationsList.length - 1];
+  const firstStation = getStationFromNode(stationsList[0]);
+  const lastStation = getStationFromNode(stationsList[stationsList.length - 1]);
 
   const currentStationId = `${name}-${
     isReversed ? stations.length - currentStation : currentStation + 1
@@ -128,7 +124,7 @@ const Line = ({
 
     if (key === 37) previousStation();
     else if (key === 39) nextStation();
-    else if (key === 32) toggleReverse();
+    else if (key === 84) toggleReverse();
   };
 
   useEffect(() => {
@@ -148,27 +144,20 @@ const Line = ({
           <span>{lineTypeToIcon(type)}</span>
         </LineIcon>
         <LineIcon {...options}>{options.icon || name}</LineIcon>
-        <LineTerminus>
+        <LineTerminus onClick={toggleReverse}>
           <span>{firstStation.name}</span>
           <FontAwesomeIcon icon={faChevronRight} />
           <span>{lastStation.name}</span>
         </LineTerminus>
       </LineIconContainer>
-      <LineWrapper>
-        <StationsWrapper lineColor={options.background}>
-          {stationsList.map((station, i) => (
-            <Station
-              key={station.id}
-              station={station}
-              isFirst={i === 0}
-              lineColor={options.background}
-              isCurrent={station.id === currentStationId}
-              isNext={isNext}
-              network={network}
-            />
-          ))}
-        </StationsWrapper>
-      </LineWrapper>
+      <LineWrapperContainer>
+        <StationsLine
+          stationsList={stationsList}
+          options={options}
+          currentStationId={currentStationId}
+          isNext={isNext}
+        />
+      </LineWrapperContainer>
     </>
   );
 };
@@ -178,7 +167,6 @@ Line.propTypes = {
   name: PropTypes.string.isRequired,
   options: PropTypes.objectOf(PropTypes.any),
   stations: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.any)),
-  network: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.any)).isRequired,
 };
 
 Line.defaultProps = {

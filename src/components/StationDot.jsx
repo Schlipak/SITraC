@@ -13,37 +13,46 @@ const StationDotWrapper = styled.div`
   border-radius: 50%;
   z-index: 1;
 
+  &::before,
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160%;
+    height: 160%;
+
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    background-color: ${props => props.lineColor};
+    opacity: 0.25;
+
+    transition-property: transform, opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition-delay: 0s;
+
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  &::after {
+    width: 200%;
+    height: 200%;
+  }
+
   ${props => props.isCurrent
     && !props.isNext
     && css`
       &::before,
       &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-
-        border-radius: 50%;
-        border: 0.2em solid ${props.lineColor};
-        transform: scale(0);
-        opacity: 1;
-
-        animation-name: Station-Dot_Bleep;
-        animation-duration: 2s;
-        animation-fill-mode: both;
-        animation-iteration-count: infinite;
-        animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
-        animation-delay: 0.5s;
-
-        z-index: -1;
-        pointer-events: none;
+        transform: translate(-50%, -50%) scale(1);
+        transition-delay: 0.2s;
       }
 
       &::after {
-        animation-delay: 1s;
+        transition-delay: 0.3s;
       }
     `};
 `;
@@ -99,7 +108,7 @@ const StationDotElement = styled.div`
         color: ${props.lineColor};
 
         animation-name: Station-Dot_Blink;
-        animation-duration: 1s;
+        animation-duration: 0.5s;
         animation-fill-mode: both;
         animation-iteration-count: infinite;
         animation-direction: alternate;
